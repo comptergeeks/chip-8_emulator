@@ -55,6 +55,7 @@ public class CPU {
             short nnn = (short) (instruction & 0x0FFF);
             printOpcodes(nibble, x, y, n, nn, nnn, false, false);
             switch (nibble) {
+                //write down required bitshifts before executing stack otherwise major issues will occur
                 case 0x00: {
                     System.out.println("clear");
                     break;
