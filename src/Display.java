@@ -9,8 +9,8 @@ public class Display extends JPanel {
     public Display(int scale) {
         this.scale = scale;
         width = 64 * scale;
-        height = 64 * scale;
-        board = new Rectangle[32][64]; //height (rows), width (columns)
+        height = 32 * scale;
+        board = new Rectangle[64][32]; //height (rows), width (columns)
         /*
         logic: turn off and on pixels depending on the current value provided by
         DXYN, make the pixels rectangles depending on the scale and then turn them
@@ -21,6 +21,7 @@ public class Display extends JPanel {
         for (int i = 0; i < board.length; i++) {
             for (int j = 0; j < board[i].length; j++) {
                 board[i][j] = new Rectangle(i * scale, j * scale, scale, scale);
+                System.out.println(board[i][j]);
             }
         }
 
@@ -46,8 +47,8 @@ public class Display extends JPanel {
                 Rectangle rect = board[i][j];
                 g.setColor(Color.blue);
                 g.drawRect(rect.x, rect.y, rect.width, rect.height);
+                //System.out.println(rect);
             }
         }
-        super.paintComponent(g);
     }
 }
