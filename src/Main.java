@@ -12,7 +12,7 @@ public class Main {
             displayFrame.getContentPane().add(dis);
             displayFrame.setVisible(true);
             displayFrame.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
-            displayFrame.setResizable(false);
+            //displayFrame.setResizable(false);
             displayFrame.pack();
             /*
                     try {

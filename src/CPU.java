@@ -58,6 +58,8 @@ public class CPU {
         switch (nibble) {
             case 0x00: {
                 //System.out.println("clear");
+                //set all rects to black - 0
+
                 break;
             }
             case 0x1: {

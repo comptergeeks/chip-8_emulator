@@ -6,11 +6,13 @@ public class Display extends JPanel {
     int width;
     int scale;
     Rectangle[][] pixels;
+    int[][] board;
     public Display(int scale) {
         this.scale = scale;
         width = 64 * scale;
         height = 32 * scale;
-        pixels = new Rectangle[64][32]; //height (rows), width (columns)
+        pixels = new Rectangle[64][32];
+        board = new int[64][32];//height (rows), width (columns)
         /*
         logic: turn off and on pixels depending on the current value provided by
         DXYN, make the pixels rectangles depending on the scale and then turn them
@@ -23,6 +25,8 @@ public class Display extends JPanel {
         for (int i = 0; i < pixels.length; i++) {
             for (int j = 0; j < pixels[i].length; j++) {
                 pixels[i][j] = new Rectangle(i * scale, j * scale, scale, scale);
+                board[i][j] = 0;
+
                 //System.out.println(board[i][j]);
             }
         }
@@ -32,16 +36,14 @@ public class Display extends JPanel {
     public void draw(CPU cpu, short i, short[] v, int x, int y, int n) {
         int xPos;
         int yPos;
-        xPos = v[x] & 63;
-        yPos = v[y] & 31;
-        v[0xf] = 0;
-        for(int m = 0; m < n; m++) {
-           short rowData = cpu.memoryArr[i + m];
-           for (int c = rowData; c< 8; c++) {
-               if (pixels[m][c].)
-           }
+        xPos = v[x] % 64;
+        yPos = v[y] % 32;
+        v[0xF] = 0;
 
-        }
+    }
+
+    public void cls() {
+
     }
 
     @Override
@@ -51,13 +53,11 @@ public class Display extends JPanel {
 
         for (int i = 0; i < pixels.length; i++) {
             for (int j = 0; j < pixels[i].length; j++) {
-                Rectangle rect = pixels[i][j];
-                g.setColor(Color.blue);
-                g.drawRect(rect.x, rect.y, rect.width, rect.height);
-
-                //g.drawString(i + "," + j + " ", rect.x + 4, rect.y - 4);
-                //g.setFont(new Font("TimesRoman", Font.PLAIN, 7));
-                //System.out.println(rect);
+                if (board[i][j] == 1) {
+                    Rectangle rect = pixels[i][j];
+                    g.setColor(Color.green);
+                    g.drawRect(rect.x, rect.y, rect.width, rect.height);
+                }
             }
         }
     }
