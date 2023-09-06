@@ -15,7 +15,7 @@ public class CPU {
     // Stack s = new Stack(); //stack used for 2 byte addresses, which calls subroutines (functions) and then returns from them - I am assuming I use this with the swtich instead of an array
     public CPU(Display dis) throws IOException {
         // add display into here
-        this. display = dis;
+        this.display = dis;
         memoryArr = new short[4096];
         programCounter = 0x200;
         v = new short[16];
@@ -28,17 +28,17 @@ public class CPU {
     }
 
     public void fetch() {
-        while (programCounter < 4096) {
+
+        while ( programCounter < 4096 ) {
             // combine each value into a short, and then pass to decode opcode
             //move variable assignment to concatenation
             short s1 = (short) (memoryArr[programCounter]);
             short s2 = (short) (memoryArr[programCounter + 1]);
             // left shift 8
             int s3 = (int) (s2 & 0xFF) | ((s1 & 0xFF) << 8); //concatenate
-
             programCounter += 2;
-
             decoder(s3);
+
         }
     }
     public void decoder(int instruction) {
@@ -53,34 +53,43 @@ public class CPU {
             int n = instruction& 0x000F;
             short nn = (short) (instruction & 0x00FF);
             short nnn = (short) (instruction & 0x0FFF);
-            printOpcodes(nibble, x, y, n, nn, nnn, false, false);
+            //printOpcodes(nibble, x, y, n, nn, nnn, false, false);
+        //System.out.print(Integer.toHexString(instruction) + ": ");
             switch (nibble) {
                 //write down required bitshifts before executing stack otherwise major issues will occur
                 case 0x00: {
-                    System.out.println("clear");
-                    break;
+                        display.cls();
+                        //System.out.print("clear");
+                        break;
                 }
                 case 0x1: {
-                    System.out.println("jump");
+                    programCounter = (short) (nnn & 0x0FFF);
+                    //System.out.print("jump");
                     break;
                 }
                 case 0x6: {
-                    System.out.println("set register vx");
+                    v[x] = (short) (nn & 0x00FF);
+                    //System.out.print("set register vx");
                     break;
                 }
                 case 0x7: {
-                    System.out.println("add value to register vx");
+                    v[x] += (short) (nn & 0x00FF);
+                    //System.out.print("add value to register vx");
                     break;
                 }
                 case 0xA: {
-                    System.out.println("set index register i");
+                    i = (short) (nnn & 0xFFF);
+                    //System.out.print("set index register i");
                     break;
                 }
                 case 0xD: {
-                    System.out.println("draw");
+                    display.draw(this, i, v, x, y, n);
+                   // System.out.print("draw");
+                    display.repaint();
                     break;
                 }
             }
+        //System.out.println();
         }
     public void printOpcodes(int nibble, int x, int y, int n, short nn, short nnn, boolean printNN, boolean printNNN) {
         //cleaner printing of opcodes to avoid clutter in the decoder, and since this will only be used for testing

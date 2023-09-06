@@ -5,6 +5,7 @@ import java.nio.file.Paths;
 
 public class Memory {
     short[] arr;
+    byte[] data;
 
     public Memory(short[] memory) {
         this.arr = memory;
@@ -37,7 +38,7 @@ public class Memory {
     public void loadROM() throws IOException {
         //load rom at 0x200 - and onwards
         Path path = Paths.get("testcases/IBM Logo.ch8");
-        byte[] data = Files.readAllBytes(path);
+        data = Files.readAllBytes(path);
         for (int i = 0; i < data.length; i++) {
             arr[0x200 + i] = (data[i]);
         }
