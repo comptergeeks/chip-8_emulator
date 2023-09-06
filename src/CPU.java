@@ -1,5 +1,4 @@
 import java.io.IOException;
-import java.util.Stack;
 
 public class CPU {
     short[] memoryArr; /*memory array, the chip - 8 has 4 kb of memory, for use the only important locations start at
@@ -7,18 +6,19 @@ public class CPU {
     was located
     */
     short programCounter; //moves up by two with each instruction
-    short[] i; //points at locations in memory
-    short[] registers;
+    short i; //points at locations in memory
+    short[] v;
     Memory memory;
+    Display display;
     short[] stack;
     // for the font I store then within an array and then set that to each location in memory 050 - 09F (80, 159)
     // Stack s = new Stack(); //stack used for 2 byte addresses, which calls subroutines (functions) and then returns from them - I am assuming I use this with the swtich instead of an array
-    public CPU() throws IOException {
+    public CPU(Display dis) throws IOException {
         // add display into here
+        this. display = dis;
         memoryArr = new short[4096];
         programCounter = 0x200;
-        registers = new short[16];
-        i = new short[2];
+        v = new short[16];
         stack = new short[16];
         memory = new Memory(memoryArr);
         memory.setFont();
@@ -54,29 +54,38 @@ public class CPU {
         short nn = (short) (instruction & 0x00FF);
         short nnn = (short) (instruction & 0x0FFF);
         //printOpcodes(nibble, x, y, n, nn, nnn, false, false);
+        //still not sure when to mask off when performing operations
         switch (nibble) {
             case 0x00: {
-                System.out.println("clear");
+                //System.out.println("clear");
                 break;
             }
             case 0x1: {
-                System.out.println("jump");
+                programCounter = nnn;
+                //System.out.println("jump");
                 break;
             }
             case 0x6: {
-                System.out.println("set register vx");
+                v[x] = nn;
+                //System.out.println("set register vx");
                 break;
             }
             case 0x7: {
-                System.out.println("add value to register vx");
+                v[x] += nn;
+                //apparently not supposed to overflow, can handle the issue later
+                //System.out.println("add value to register vx");
             }
             case 0xA: {
-                System.out.println("set index register i");
+                i = nnn;
+                //System.out.println("set index register i");
             }
             case 0xD: {
                 System.out.println("draw");
+                display.draw(this, i , v, x, y, n);
+                display.repaint();
             }
         }
+
     }
     public void printOpcodes(int nibble, int x, int y, int n, short nn, short nnn, boolean printNN, boolean printNNN) {
         //cleaner printing of opcodes to avoid clutter in the decoder, and since this will only be used for testing

@@ -2,16 +2,28 @@ import javax.swing.*;
 import java.io.IOException;
 
 public class Main {
+
     public static void main(String[] args) throws IOException {
+        int scale = 8;
+        Display dis = new Display(scale);
         SwingUtilities.invokeLater(() -> {
+
             JFrame displayFrame = new JFrame();
-            Display dis = new Display();
-            displayFrame.setSize(640, 320);
+
+            displayFrame.setSize(64 * scale, 32 * scale);
             displayFrame.getContentPane().add(dis);
             displayFrame.setVisible(true);
             displayFrame.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
-        }
+            /*
+                    try {
+                        CPU cpu = new CPU(dis);
+                    } catch (IOException e) {
+                        throw new RuntimeException(e);
+                    }
+
+             */
+                }
         );
-        CPU cpu = new CPU();
+        CPU cpu = new CPU(dis);
     }
 }
