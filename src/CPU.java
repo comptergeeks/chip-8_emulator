@@ -42,57 +42,45 @@ public class CPU {
         }
     }
     public void decoder(int instruction) {
-        //according to guide steps are to extract nibbles first, and then decode based on that
-        //nibble first four bits so mask off first four
-        int nibble = instruction >> 12 & 0xFF;
-        //x second 4 bits
-        int x = instruction >> 8 & 0x0F;
-        //y third 4 bits
-        int y = instruction >> 4 & 0x00F;
-        //n forth 4 bits
-        int n = instruction& 0x000F;
-        short nn = (short) (instruction & 0x00FF);
-        short nnn = (short) (instruction & 0x0FFF);
-        printOpcodes(nibble, x, y, n, nn, nnn, false, false);
-        //still not sure when to mask off when performing operations
-        switch (nibble) {
-            case 0x00: {
-                System.out.println("clear");
-                //set all rects to black - 0
-                display.cls();
-                break;
-            }
-            case 0x1: {
-                System.out.println("jump");
-                programCounter =  nnn;
-                //System.out.println("jump");
-                break;
-            }
-            case 0x6: {
-                v[x] = nn;
-                System.out.println("set register vx");
-                break;
-            }
-            case 0x7: {
-                v[x] += nn;
-                //apparently not supposed to overflow, can handle the issue later
-                System.out.println("add value to register vx");
-                break;
-            }
-            case 0xA: {
-                i = nnn;
-                System.out.println("set index register i");
-                break;
-            }
-            case 0xD: {
-                System.out.println("draw");
-                display.draw(this, i , v, x, y, n);
-                display.repaint();
-                break;
+            //according to guide steps are to extract nibbles first, and then decode based on that
+            //nibble1 first four bits so mask off first four
+            int nibble = instruction >> 12 & 0xFF;
+            //x second 4 bits
+            int x = instruction >> 8 & 0x0F;
+            //y third 4 bits
+            int y = instruction >> 4 & 0x00F;
+            //n forth 4 bits
+            int n = instruction& 0x000F;
+            short nn = (short) (instruction & 0x00FF);
+            short nnn = (short) (instruction & 0x0FFF);
+            printOpcodes(nibble, x, y, n, nn, nnn, false, false);
+            switch (nibble) {
+                case 0x00: {
+                    System.out.println("clear");
+                    break;
+                }
+                case 0x1: {
+                    System.out.println("jump");
+                    break;
+                }
+                case 0x6: {
+                    System.out.println("set register vx");
+                    break;
+                }
+                case 0x7: {
+                    System.out.println("add value to register vx");
+                    break;
+                }
+                case 0xA: {
+                    System.out.println("set index register i");
+                    break;
+                }
+                case 0xD: {
+                    System.out.println("draw");
+                    break;
+                }
             }
         }
-
-    }
     public void printOpcodes(int nibble, int x, int y, int n, short nn, short nnn, boolean printNN, boolean printNNN) {
         //cleaner printing of opcodes to avoid clutter in the decoder, and since this will only be used for testing
         if (!printNN && !printNNN) {

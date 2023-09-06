@@ -30,15 +30,13 @@ public class Display extends JPanel {
                 //System.out.println(board[i][j]);
             }
         }
-        System.out.println(pixels[0].length);
-
     }
     public void draw(CPU cpu, short i, short[] v, int x, int y, int n) {
         int xPos;
         int yPos;
         xPos = v[x] % 64;
         yPos = v[y] % 32;
-        v[0xF] = 0;
+        //v[0xF] = 0;
 
     }
 
@@ -50,7 +48,6 @@ public class Display extends JPanel {
     protected void paintComponent(Graphics g) {
 
         super.paintComponent(g);
-
         for (int i = 0; i < pixels.length; i++) {
             for (int j = 0; j < pixels[i].length; j++) {
                 if (board[i][j] == 1) {
