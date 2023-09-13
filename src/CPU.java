@@ -54,31 +54,38 @@ public class CPU {
             short nn = (short) (instruction & 0x00FF);
             short nnn = (short) (instruction & 0x0FFF);
             //printOpcodes(nibble, x, y, n, nn, nnn, false, false);
-        //System.out.print(Integer.toHexString(instruction) + ": ");
             switch (nibble) {
-                //write down required bitshifts before executing stack otherwise major issues will occur
                 case 0x00: {
-                        display.cls();
-                        //System.out.print("clear");
-                        break;
+                    switch (nn) { // (short) (nn & 0x00FF) - in case this breaks later down the line
+                        case 0xE0: {
+                            display.cls();
+                            System.out.print("clear");
+                            break;
+                        }
+                        case 0xEE: {
+                            //call subroutine, make function
+                            break;
+                        }
+                    }
+                    break;
                 }
                 case 0x1: {
-                    programCounter = (short) (nnn & 0x0FFF);
+                    programCounter = nnn; //(short) (nnn & 0x0FFF)
                     //System.out.print("jump");
                     break;
                 }
                 case 0x6: {
-                    v[x] = (short) (nn & 0x00FF);
+                    v[x] = nn; //(short) (nn & 0x00FF)
                     //System.out.print("set register vx");
                     break;
                 }
                 case 0x7: {
-                    v[x] += (short) (nn & 0x00FF);
+                    v[x] += nn; //(short) (nn & 0x00FF)
                     //System.out.print("add value to register vx");
                     break;
                 }
                 case 0xA: {
-                    i = (short) (nnn & 0xFFF);
+                    i = nnn; //(short) (nnn & 0xFFF)
                     //System.out.print("set index register i");
                     break;
                 }
@@ -87,6 +94,21 @@ public class CPU {
                    // System.out.print("draw");
                     display.repaint();
                     break;
+                } case 0x2: {
+                    //call subroutine/function at memory location NNN - set program counter to NNN
+                    //steps 1: push current pc to stack, so subroutine can return to it later
+                    //step 2: 00EE returns from subroutine - pop the last address from stack and set program counter to it.
+                }
+                case 0x3: {
+                    //grouped with 0x4XNN, 0x5XY0, and 0x9XY0 "Skip"
+                    //skip one instruction if v[x] == nn
+
+                }
+                case 0x4: {
+                    //skip one instruction if v[x] != nn
+                }
+                default: {
+                    System.out.println("no opcode found");
                 }
             }
         //System.out.println();
