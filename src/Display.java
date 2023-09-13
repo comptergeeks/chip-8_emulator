@@ -22,7 +22,7 @@ public class Display extends JPanel {
         off through that
          */
         setBackground(Color.BLACK);
-        //setSize(new Dimension(width, height));
+
         getPreferredSize();
         System.out.println(getSize());
         //create pixels and set all values to false
@@ -34,22 +34,23 @@ public class Display extends JPanel {
         }
     }
     public void draw(CPU cpu, short i, short[] v, int x, int y, int n) {
+        v[0xF] = 0;
         int xPos = v[x] % 64;
         int yPos = v[y] % 32;
-        v[0xF] = 0;
+
         //add comments for understanding
-        for (int spriteRow = 0; spriteRow < n; spriteRow++) {
-            short spriteRowData = (short) (cpu.memoryArr[i + spriteRow] & 0xFF);
-            for (int spriteBit = 0; spriteBit < 8; spriteBit++) {
-                if (xPos + spriteBit < width && yPos + spriteRow < height) {
-                    int currentPixel = board[yPos + spriteRow][xPos + spriteBit];
-                    if (currentPixel == 1 && ((spriteRowData >> 7 - spriteBit) & 1) == 1) {
+        for (int row = 0; row < n; row++) {
+            short rowData = (short) (cpu.memoryArr[i + row] & 0xFF);
+            for (int bits = 0; bits < 8; bits++) {
+                if (xPos + bits < arrWidth && yPos + row < arrHeight) {
+                    int currentPixel = board[yPos + row][xPos + bits];
+                    if (currentPixel == 1 && ((rowData >> 7 - bits) & 1) == 1) {
                         v[0xF] = 1;
-                        board[yPos + spriteRow][xPos + spriteBit] = 0;
+                        board[yPos + row][xPos + bits] = 0;
                     }
 
-                    if (currentPixel == 0 && ((spriteRowData >> 7 - spriteBit) & 1) == 1) {
-                        board[yPos + spriteRow][xPos + spriteBit] = 1;
+                    if (currentPixel == 0 && ((rowData >> 7 - bits) & 1) == 1) {
+                        board[yPos + row][xPos + bits] = 1;
                     }
                 }
             }

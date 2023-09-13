@@ -11,6 +11,7 @@ public class Main {
             //displayFrame.setSize(64 * scale, 32 * scale);
             displayFrame.getContentPane().add(dis);
             displayFrame.setVisible(true);
+            displayFrame.setResizable(false);
             displayFrame.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
             //displayFrame.setResizable(false);
             displayFrame.pack();
