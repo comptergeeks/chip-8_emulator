@@ -11,16 +11,18 @@ public class CPU {
     short[] v;
     Memory memory;
     Display display;
+    short dt;
 
     Stack stack;
     // for the font I store then within an array and then set that to each location in memory 050 - 09F (80, 159)
     // Stack s = new Stack(); //stack used for 2 byte addresses, which calls subroutines (functions) and then returns from them - I am assuming I use this with the swtich instead of an array
-    public CPU(Display dis) throws IOException {
+    public CPU(Display dis) throws IOException, InterruptedException {
         // add display into here
         this.display = dis;
         memoryArr = new short[4096];
         programCounter = 0x200;
         v = new short[16];
+        dt = 0;
         stack = new Stack<Short>();
         memory = new Memory(memoryArr);
         memory.setFont();
@@ -29,16 +31,17 @@ public class CPU {
 
     }
 
-    public void fetch() {
+    public void fetch() throws InterruptedException {
 
         while ( programCounter < 4096 ) {
+            Thread.sleep(10);
+            // timing would go here - need to increment a timer based on the amount instructions ran
             // combine each value into a short, and then pass to decode opcode
             //move variable assignment to concatenation
-            short s1 = (short) (memoryArr[programCounter]);
-            short s2 = (short) (memoryArr[programCounter + 1]);
+            short s1 = (short) (memoryArr[programCounter++]);
+            short s2 = (short) (memoryArr[programCounter++]);
             // left shift 8
             int s3 = (int) (s2 & 0xFF) | ((s1 & 0xFF) << 8); //concatenate
-            programCounter += 2;
             decoder(s3);
         }
     }
@@ -60,7 +63,6 @@ public class CPU {
                     switch (nn) { // (short) (nn & 0x00FF) - in case this breaks later down the line
                         case 0xE0: {
                             display.cls();
-                            System.out.print("clear");
                             break;
                         }
                         case 0xEE: {
@@ -179,22 +181,7 @@ public class CPU {
                             break;
                         }
                         case 0x6: {
-                            //shift left (E) or right one (6)
-                            //v[x] = (short) (v[y] & 0xFF);
-                            //get the first bit value so maybe mask off with 0b1 - get the value of the first digit and then right shift one
-                            //get x & 1 - if 1 then vf = 1 else vf = 0;
-                            //divide v[x]/2
-                            /*
-                            short temp = (short) (v[x] & 0xFF);
-                            short operation = (short) ((v[y] >> 1)& 0xFF);
-                            v[x] = operation;
-                            if ((temp & 1) == 1) {
-                                v[0xF] = 1;
-                            } else {
-                                v[0xF] = 0;
-                            }
-                            break;
-                             */
+
                             short temp = (short) (v[x] & 0xFF);
                             short operation = (short) ((v[x] >> 1)& 0xFF);
                             v[x] = operation;

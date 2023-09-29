@@ -3,7 +3,7 @@ import java.io.IOException;
 
 public class Main {
 
-    public static void main(String[] args) throws IOException {
+    public static void main(String[] args) throws IOException, InterruptedException {
         int scale = 8;
         Display dis = new Display(scale);
         SwingUtilities.invokeLater(() -> {
