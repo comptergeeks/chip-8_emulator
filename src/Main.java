@@ -15,14 +15,6 @@ public class Main {
             displayFrame.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
             //displayFrame.setResizable(false);
             displayFrame.pack();
-            /*
-                    try {
-                        CPU cpu = new CPU(dis);
-                    } catch (IOException e) {
-                        throw new RuntimeException(e);
-                    }
-
-             */
                 }
         );
         CPU cpu = new CPU(dis);

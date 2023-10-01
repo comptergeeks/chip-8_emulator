@@ -1,4 +1,5 @@
 import java.io.IOException;
+import java.util.Random;
 import java.util.Stack;
 
 public class CPU {
@@ -11,7 +12,6 @@ public class CPU {
     short[] v;
     Memory memory;
     Display display;
-    short dt;
 
     Stack stack;
     // for the font I store then within an array and then set that to each location in memory 050 - 09F (80, 159)
@@ -22,7 +22,6 @@ public class CPU {
         memoryArr = new short[4096];
         programCounter = 0x200;
         v = new short[16];
-        dt = 0;
         stack = new Stack<Short>();
         memory = new Memory(memoryArr);
         memory.setFont();
@@ -34,7 +33,7 @@ public class CPU {
     public void fetch() throws InterruptedException {
 
         while ( programCounter < 4096 ) {
-            Thread.sleep(10);
+            Thread.sleep(8);
             // timing would go here - need to increment a timer based on the amount instructions ran
             // combine each value into a short, and then pass to decode opcode
             //move variable assignment to concatenation
@@ -181,7 +180,6 @@ public class CPU {
                             break;
                         }
                         case 0x6: {
-
                             short temp = (short) (v[x] & 0xFF);
                             short operation = (short) ((v[x] >> 1)& 0xFF);
                             v[x] = operation;
@@ -215,6 +213,62 @@ public class CPU {
                 }
                 //arithmetic operations are determined by n value - so it's a nested which first checks the nibble and then the N value
                 //using nested switch case, just like the clear / subroutine instruction
+                case 0xB: {
+                    programCounter = (short) ((nn + v[0]) & 0xFF);
+                    break;
+                }
+                case 0xC: {
+                    Random rand = new Random();
+                    short random = (short) (rand.nextInt(255));
+                    short operation = (short) ((random & nn) & 0xFF);
+                    v[x] = operation;
+                }
+                case 0xF: {
+                    switch (nn) {
+                        case 0x1E: {
+                            if (i + v[x] > 0x0FFF) {
+                                v[0xF] = 1;
+                            } else {
+                                v[0xF] = 0;
+                            }
+                            i = (short) (i + v[x]);
+                            break;
+                        }
+                        case 0x29: {
+                            i = memoryArr[v[x] * 5];
+                            break;
+                        }
+                        case 0x33: {
+                            //can shorten with for loop
+                            short num = v[x];
+                            short ones = (short) (num % 10);
+                            num /= 10;
+                            short tens = (short) (num % 10);
+                            num /= 10;
+                            short hundreds = num;
+                            memoryArr[i] = hundreds;
+                            System.out.println(memoryArr[i]);
+                            memoryArr[i + 1] = tens;
+                            System.out.println(memoryArr[i + 1]);
+                            memoryArr[i + 2] = ones;
+                            System.out.println(memoryArr[i + 2]);
+                            break;
+                        }
+                        case 0x55: {
+                                for(int z = 0; z <= x; z++) {
+                                     memoryArr[i + z] =  (short) (v[z] & 0xFF);
+                            }
+                            break;
+                        }
+                        case 0x65: {
+                            for (int z = 0; z <= x; z++) {
+                                v[z] = (short) (memoryArr[i + z] & 0xFF);
+                            }
+                            break;
+                        }
+                    }
+
+                }
                 default: {
                     System.out.println("no opcode found " + Integer.toHexString(instruction) );
                 }
