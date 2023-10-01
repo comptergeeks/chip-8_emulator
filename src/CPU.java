@@ -33,7 +33,7 @@ public class CPU {
     public void fetch() throws InterruptedException {
 
         while ( programCounter < 4096 ) {
-            Thread.sleep(8);
+            Thread.sleep(1);
             // timing would go here - need to increment a timer based on the amount instructions ran
             // combine each value into a short, and then pass to decode opcode
             //move variable assignment to concatenation
@@ -160,13 +160,16 @@ public class CPU {
                         }
                         case 0x4: {
                             //add 0 with overflow, if the result is > 0xFF v[0xF] = 1; else v[0xF] = 0;
+                            short flagV;
+                            if (v[x] + v[y] > 0xFF) {
+                                flagV = 1;
+                            } else {
+                                flagV = 0;
+                            }
                             short operation = (short) ((v[x] + v[y]) & 0xFF);
                             v[x] = operation;
-                            if (operation > 0xFF) {
-                                v[0xF] = 1;
-                            } else {
-                                v[0xF] = 0;
-                            }
+                            v[0xF] = flagV;
+
                             break;
                         }
                         case 0x5: {
@@ -174,9 +177,10 @@ public class CPU {
                             //if the first (minuend) > than second ) subtrahend - v[0xF] = 1;
                             //else v[0xF] = 0;
                             //make a function to affect carry flag
+                            short flagV = subtractionFlag(v[x], v[y], v[0xF], true);
                             short operation = (short) ((v[x] - v[y]) & 0xFF);
                             v[x] = operation;
-                            v[0xF] = subtractionFlag(v[x], v[y], v[0xF], true);
+                            v[0xF] = flagV;
                             break;
                         }
                         case 0x6: {
@@ -226,11 +230,14 @@ public class CPU {
                 case 0xF: {
                     switch (nn) {
                         case 0x1E: {
+                            /*
                             if (i + v[x] > 0x0FFF) {
                                 v[0xF] = 1;
                             } else {
                                 v[0xF] = 0;
                             }
+
+                             */
                             i = (short) (i + v[x]);
                             break;
                         }
@@ -267,7 +274,7 @@ public class CPU {
                             break;
                         }
                     }
-
+                    break;
                 }
                 default: {
                     System.out.println("no opcode found " + Integer.toHexString(instruction) );
