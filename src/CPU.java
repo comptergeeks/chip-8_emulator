@@ -169,7 +169,6 @@ public class CPU {
                             short operation = (short) ((v[x] + v[y]) & 0xFF);
                             v[x] = operation;
                             v[0xF] = flagV;
-
                             break;
                         }
                         case 0x5: {
@@ -196,20 +195,24 @@ public class CPU {
                         }
                         case 0x7: {
                             //not sure if the subtraction flag method works for 0x7 due to corax test not implemented, could cause an issue later
+                            short flagV = subtractionFlag(v[x], v[y], v[0xF], false);
                             short operation = (short) ((v[y] - v[x]) & 0xFF);
                             v[x] = operation;
-                            v[0xF] = subtractionFlag(v[x], v[y], v[0xF], false);
+                            v[0xF] = flagV;
                             break;
                         }
                         case 0xE: {
                             short temp = (short) (v[x] & 0xFF);
+                            short flagV;
+                            if ((temp & 1) == 1) {
+                                flagV = 1;
+                            } else {
+                                flagV = 0;
+                            }
                             short operation = (short) ((v[x] << 1)& 0xFF);
                             v[x] = operation;
-                            if ((temp & 1) == 1) {
-                                v[0xF] = 1;
-                            } else {
-                                v[0xF] = 0;
-                            }
+                            v[0xF] = flagV;
+
                             break;
                         }
                     }

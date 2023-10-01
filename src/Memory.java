@@ -40,7 +40,7 @@ public class Memory {
         //Path path = Paths.get("testcases/IBM Logo.ch8");
 //        Path path = Paths.get("testcases/test_opcode2.ch8");
         //Path path = Paths.get("testcases/breakout.rom");
-        Path path = Paths.get("testcases/4-flags.ch8");
+       Path path = Paths.get("testcases/4-flags.ch8");
         data = Files.readAllBytes(path);
         for (int i = 0; i < data.length; i++) {
             arr[0x200 + i] = (data[i]);
