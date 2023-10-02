@@ -153,7 +153,6 @@ public class CPU {
                     case 0x2: {
                         //and
                         short operation = (short) ((v[x] & v[y]) & 0xFF);
-                        ;
                         v[x] = operation;
                         break;
                     }
@@ -202,7 +201,6 @@ public class CPU {
                         break;
                     }
                     case 0x7: {
-
                         //short flagV = subtractionFlag(v[x], v[y], v[0xF], false);
                         short flagV = 0;
                         if (v[y] >= v[x]) flagV = 1;
@@ -243,19 +241,11 @@ public class CPU {
             case 0xF: {
                 switch (nn) {
                     case 0x1E: {
-                            /*
-                            if (i + v[x] > 0x0FFF) {
-                                v[0xF] = 1;
-                            } else {
-                                v[0xF] = 0;
-                            }
-
-                             */
                         i = (short) (i + v[x]);
                         break;
                     }
                     case 0x29: {
-                        i = memoryArr[v[x] * 5];
+                        i = (short) ((v[x]*5) & 0x00FF);
                         break;
                     }
                     case 0x33: {
@@ -267,11 +257,8 @@ public class CPU {
                         num /= 10;
                         short hundreds = num;
                         memoryArr[i] = hundreds;
-                        System.out.println(memoryArr[i]);
                         memoryArr[i + 1] = tens;
-                        System.out.println(memoryArr[i + 1]);
                         memoryArr[i + 2] = ones;
-                        System.out.println(memoryArr[i + 2]);
                         break;
                     }
                     case 0x55: {
@@ -289,6 +276,9 @@ public class CPU {
                 }
                 break;
             }
+            case 0xE: {
+                break;
+            }
             default: {
                 System.out.println("no opcode found " + Integer.toHexString(instruction));
             }
@@ -298,6 +288,7 @@ public class CPU {
 
     public void printOpcodes(int nibble, int x, int y, int n, short nn, short nnn, boolean printNN, boolean printNNN) {
         //cleaner printing of opcodes to avoid clutter in the decoder, and since this will only be used for testing
+        //code maybe be refactored later into GUI element and send values over to display later.
         if (!printNN && !printNNN) {
             System.out.print(Integer.toHexString(nibble));
             System.out.print(Integer.toHexString(x));
@@ -311,5 +302,8 @@ public class CPU {
             System.out.print(Integer.toHexString(nnn));
         }
         System.out.println();
+    }
+    public void receiveInput() {
+
     }
 }
