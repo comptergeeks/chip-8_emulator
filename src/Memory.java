@@ -34,12 +34,17 @@ public class Memory {
             arr[i] = font[count];
             count++;
         }
+
     }
     public void loadROM() throws IOException {
         //load rom at 0x200 - and onwards
-        //Path path = Paths.get("testcases/IBM Logo.ch8");
-        Path path = Paths.get("testcases/test_opcode2.ch8");
-        //Path path = Paths.get("testcases/breakout.rom");
+//        Path path = Paths.get("testcases/IBM Logo.ch8");
+//        Path path = Paths.get("testcases/test_opcode2.ch8");
+        Path path = Paths.get("testcases/breakout.rom");
+//        Path path = Paths.get("testcases/pong.rom");
+//        Path path = Paths.get("testcases/maze.rom");
+//         Path path = Paths.get("testcases/tetris.rom");
+//        Path path = Paths.get("testcases/6-keypad.ch8");
 //        Path path = Paths.get("testcases/4-flags.ch8");
 //        Path path = Paths.get("testcases/oob_test.ch8");
         data = Files.readAllBytes(path);

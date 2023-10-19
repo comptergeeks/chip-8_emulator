@@ -1,5 +1,7 @@
+import java.awt.event.KeyEvent;
 import java.io.IOException;
 import java.util.Random;
+import java.util.SortedMap;
 import java.util.Stack;
 
 public class CPU {
@@ -10,11 +12,12 @@ public class CPU {
     short programCounter; //moves up by two with each instruction
     short i; //points at locations in memory
     short[] v;
+    short keyValue;
+    short delayTimer;
+    boolean keyPressed;
     Memory memory;
     Display display;
-
     Stack stack;
-
     // for the font I store then within an array and then set that to each location in memory 050 - 09F (80, 159)
     // Stack s = new Stack(); //stack used for 2 byte addresses, which calls subroutines (functions) and then returns from them - I am assuming I use this with the swtich instead of an array
     public CPU(Display dis) throws IOException, InterruptedException {
@@ -27,14 +30,19 @@ public class CPU {
         memory = new Memory(memoryArr);
         memory.setFont();
         memory.loadROM();
+        delayTimer = 60;
         fetch();
 
     }
 
     public void fetch() throws InterruptedException {
-
         while (programCounter < 4096) {
             Thread.sleep(1);
+            if (delayTimer > 60) {
+                tick();
+            } else {
+                resetTimer();
+            }
             // timing would go here - need to increment a timer based on the amount instructions ran
             // combine each value into a short, and then pass to decode opcode
             //move variable assignment to concatenation
@@ -42,6 +50,7 @@ public class CPU {
             short s2 = (short) (memoryArr[programCounter++]);
             // left shift 8
             int s3 = (int) (s2 & 0xFF) | ((s1 & 0xFF) << 8); //concatenate
+            returnInput();
             decoder(s3);
         }
     }
@@ -49,6 +58,7 @@ public class CPU {
     public void decoder(int instruction) {
         //according to guide steps are to extract nibbles first, and then decode based on that
         //nibble1 first four bits so mask off first four
+
         int nibble = instruction >> 12 & 0xFF;
         //x second 4 bits
         int x = instruction >> 8 & 0x0F;
@@ -58,7 +68,7 @@ public class CPU {
         int n = instruction & 0x000F;
         short nn = (short) (instruction & 0x00FF);
         short nnn = (short) (instruction & 0x0FFF);
-        //printOpcodes(nibble, x, y, n, nn, nnn, false, false);
+//        printOpcodes(nibble, x, y, n, nn, nnn, false, false);
         switch (nibble) {
             case 0x00: {
                 switch (nn) { // (short) (nn & 0x00FF) - in case this breaks later down the line
@@ -98,7 +108,7 @@ public class CPU {
             case 0xD: {
                 display.draw(this, i, v, x, y, n);
                 // System.out.print("draw");
-                display.repaint();
+//                display.repaint();
                 break;
             }
             case 0x2: {
@@ -112,7 +122,7 @@ public class CPU {
             case 0x3: {
                 //grouped with 0x4XNN, 0x5XY0, and 0x9XY0 "Skip"
                 //skip one instruction if v[x] == nn
-                if (v[x] == nn) {
+                if (v[x] == (short) (nn & 0xFF)) {
                     programCounter += 2;
                 }
                 break;
@@ -237,6 +247,7 @@ public class CPU {
                 short random = (short) (rand.nextInt(255));
                 short operation = (short) ((random & nn) & 0xFF);
                 v[x] = operation;
+                break;
             }
             case 0xF: {
                 switch (nn) {
@@ -245,7 +256,9 @@ public class CPU {
                         break;
                     }
                     case 0x29: {
-                        i = (short) ((v[x]*5) & 0x00FF);
+//                        i = (short) ((v[x]*5) & 0x00FF);
+                        i = (short) ((((v[x]*5) & 0xFF) + 0x50));
+                        System.out.println(Integer.toHexString(i) + " working");
                         break;
                     }
                     case 0x33: {
@@ -273,10 +286,45 @@ public class CPU {
                         }
                         break;
                     }
+                    case 0x0A: {
+                        short kv = (short) (keyValue & 0xFF);
+                        if (keyPressed) {
+                            v[x] = kv;
+                            keyPressed = false;
+                        } else {
+                            programCounter -= 2;
+                        }
+                        break;
+                    }
+                    case 0x07: {
+                        short timerV = (short) (delayTimer & 0xFF);
+                        v[x] = timerV;
+                        break;
+                    }
+                    case 0x15: {
+                        delayTimer = v[x];
+                        break;
+                    }
                 }
                 break;
             }
             case 0xE: {
+                switch (nn) {
+                    case 0x9E: {
+                        short key = (short) (keyValue & 0xFF);
+                        if (key == v[x]) {
+                            programCounter += 2;
+                        }
+                        break;
+                    }
+                    case 0xA1: {
+                        short key = (short) (keyValue & 0xFF);
+                        if (key != v[x]) {
+                            programCounter += 2;
+                        }
+                        break;
+                    }
+                }
                 break;
             }
             default: {
@@ -303,7 +351,14 @@ public class CPU {
         }
         System.out.println();
     }
-    public void receiveInput() {
-
+    public void returnInput() {
+        keyValue = display.k.keyValue;
+        keyPressed = display.k.keyPressed;
+    }
+    public void tick() {
+        delayTimer -= 1;
+    }
+    public void resetTimer() {
+        delayTimer = 0;
     }
 }

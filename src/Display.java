@@ -1,13 +1,17 @@
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.KeyEvent;
+import java.awt.event.KeyListener;
 
-public class Display extends JPanel {
+public class Display extends JPanel{
     int height;
     int width;
     int arrHeight, arrWidth;
     int scale;
     Rectangle[][] pixels;
     int[][] board;
+    Keyboard k = new Keyboard();
+
     public Display(int scale) {
         arrHeight = 32;
         arrWidth = 64;
@@ -21,7 +25,11 @@ public class Display extends JPanel {
         DXYN, make the pixels rectangles depending on the scale and then turn them
         off through that
          */
+        //add seperate class that calls check for input and call that in cpu
+        addKeyListener(k);;
+        setFocusable(true);
         setBackground(Color.BLACK);
+        //add keyboard class here
 
         getPreferredSize();
         System.out.println(getSize());
@@ -33,6 +41,7 @@ public class Display extends JPanel {
             }
         }
     }
+
     public void draw(CPU cpu, short i, short[] v, int x, int y, int n) {
         v[0xF] = 0;
         int xPos = v[x] % 64;
@@ -48,15 +57,14 @@ public class Display extends JPanel {
                         v[0xF] = 1;
                         board[yPos + row][xPos + bits] = 0;
                     }
-
                     if (currentPixel == 0 && ((rowData >> 7 - bits) & 1) == 1) {
                         board[yPos + row][xPos + bits] = 1;
                     }
                 }
             }
         }
+        repaint();
     }
-
     public void cls() {
         for (int i = 0; i < arrHeight; i++) {
             for (int j = 0; j < arrWidth; j++) {
@@ -70,7 +78,6 @@ public class Display extends JPanel {
         super.paintComponent(g);
         for (int i = 0; i < arrHeight; i++) {
             for (int j = 0; j < arrWidth; j++) {
-                g.setFont(new Font("Serif", Font.PLAIN, 5));
                 if (board[i][j] == 1) {
                     Rectangle rect = pixels[i][j];
                     g.setColor(Color.green);
@@ -91,4 +98,5 @@ public class Display extends JPanel {
     public Dimension getPreferredSize() {
         return (new Dimension(width, height));
     }
+
 }
